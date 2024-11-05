@@ -1,0 +1,156 @@
+[workspace]
+members = [
+  ".",
+  "capi",
+  "cli",
+  "examples/sym-debuginfod",
+  "examples/gsym-in-apk",
+]
+
+[package]
+name = "blazesym"
+description = "blazesym is a library for address symbolization and related tasks."
+version = "0.2.0-rc.0"
+edition = "2021"
+rust-version = "1.65"
+authors = ["Daniel Müller <deso@posteo.net>", "Kui-Feng <thinker.li@gmail.com>"]
+license = "BSD-3-Clause"
+repository = "https://github.com/libbpf/blazesym"
+readme = "README.md"
+categories = [
+  "algorithms",
+  "api-bindings",
+  "development-tools::debugging",
+  "os::unix-apis",
+  "value-formatting",
+]
+keywords = [
+  "dwarf",
+  "elf",
+  "gsym",
+  "stacktrace",
+  "tracing",
+]
+exclude = ["data/kallsyms.xz"]
+autobenches = false
+autoexamples = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = [
+  "backtrace",
+  "demangle",
+  "dwarf",
+  "zlib",
+]
+# Enable this feature to enable APK support (mostly relevant for
+# Android).
+apk = []
+# Enable this feature to compile in support for capturing backtraces in errors.
+# Note that by default backtraces will not be collected unless opted in with
+# environment variables.
+backtrace = []
+# Enable this feature to enable Breakpad support.
+breakpad = ["dep:nom"]
+# Enable this feature to get transparent symbol demangling.
+demangle = ["dep:cpp_demangle", "dep:rustc-demangle"]
+# Enable this feature to enable DWARF support.
+dwarf = ["dep:gimli"]
+# Enable this feature to enable Gsym support.
+gsym = []
+# Enable this feature to enable support for zlib decompression. This is
+# currently only used for handling compressed debug information.
+zlib = ["dep:miniz_oxide"]
+# Enable this feature to enable support for zstd decompression. This is
+# currently only used for handling compressed debug information.
+zstd = ["dep:zstd"]
+
+# Below here are dev-mostly features that should not be needed by
+# regular users.
+
+# Enable this feature to opt in to the generation of unit test files.
+# Having these test files created is necessary for running tests.
+generate-unit-test-files = ["dump_syms", "xz2", "zip"]
+# Enable this feature to opt in to the generation of large benchmark
+# files (also used for regression testing).
+generate-large-test-files = ["dump_syms", "reqwest", "xz2"]
+# Disable generation of test files. This feature takes preference over
+# `generate-unit-test-files`.
+dont-generate-unit-test-files = []
+# Enable code paths requiring a nightly toolchain. This feature is only meant to
+# be used for testing and benchmarking purposes, not for the core library, which
+# is expected to work on stable.
+nightly = []
+
+[[example]]
+name = "addr2ln"
+
+[[example]]
+name = "addr2ln_pid"
+
+[[example]]
+name = "backtrace"
+
+[[bench]]
+name = "main"
+harness = false
+
+[profile.release]
+debug = true
+opt-level = 3
+lto = true
+codegen-units = 1
+
+# `bench` inherits from `release`, but we overwrite some options that
+# result in excessive build times for faster iteration.
+[profile.bench]
+lto = false
+codegen-units = 256
+
+[build-dependencies]
+dump_syms = {version = "2.3", optional = true, default-features = false}
+libc = "0.2.137"
+reqwest = {version = "0.12.0", optional = true, features = ["blocking"]}
+xz2 = {version = "0.1.7", optional = true}
+zip = {version = "2.0.0", optional = true, default-features = false}
+
+[dependencies]
+cpp_demangle = {version = "0.4", optional = true}
+gimli = {version = "0.30", optional = true}
+libc = "0.2.137"
+miniz_oxide = {version = "0.7", default-features = false, features = ["simd", "with-alloc"], optional = true}
+nom = {version = "7", optional = true}
+rustc-demangle = {version = "0.1.4", optional = true}
+tracing = {version = "0.1.27", default-features = false, features = ["attributes"], optional = true}
+zstd = {version = "0.13.1", default-features = false, optional = true}
+
+[dev-dependencies]
+# For performance comparison; pinned, because we use #[doc(hidden)]
+# APIs.
+addr2line = "=0.23.0"
+anyhow = "1.0.71"
+# TODO: Enable `zstd` feature once toolchain support for it is more
+#       widespread (enabled by default in `ld`). Remove conditionals in
+#       test code alongside.
+blazesym = {path = ".", features = ["generate-unit-test-files", "apk", "breakpad", "gsym", "tracing"]}
+# TODO: Use 0.5.2 once released.
+criterion = {git = "https://github.com/bheisler/criterion.rs.git", rev = "b913e232edd98780961ecfbae836ec77ede49259", default-features = false, features = ["rayon", "cargo_bench_support"]}
+scopeguard = "1.2"
+stats_alloc = {version = "0.1.1", features = ["nightly"]}
+tempfile = "3.4"
+test-log = {version = "0.2.14", default-features = false, features = ["trace"]}
+test-tag = "0.1.3"
+
+# A set of unused dependencies that we require to force correct minimum versions
+# of transitive dependencies, for cases where our dependencies have incorrect
+# dependency specifications themselves.
+# > 22 |     let mut hash = simd_adler32::Adler32::from_checksum(adler);
+# >    |                                           ^^^^^^^^^^^^^ function or associated item not found in `Adler32`
+_simd-adler32_unused = { package = "simd-adler32", version = "0.3.3" }
+
+# https://docs.rs/about/metadata
+[package.metadata.docs.rs]
+features = ["apk", "backtrace", "breakpad", "demangle", "dwarf", "gsym"]
+# defines the configuration attribute `docsrs`
+rustdoc-args = ["--cfg", "docsrs"]

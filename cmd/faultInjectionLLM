@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# 检查是否以root用户运行
+if [ "$EUID" -ne 0 ]; then
+  echo "[Hint] 请使用root权限运行该脚本 / plz run with root"
+  exit 1
+fi
+
+
+# 帮助信息
+help_message="Usage: $0 [command] [options]
+--------------faultInjectionLLM:Any Kernel Error Injection--------
+
+Commands:
+  server           Run the LLM server.
+  add              Run the run script.
+  gen              Generate eBPF Error Injection src and bin.
+  list             List the Function of selected or LLM recommend
+  clean            Clean previous files.
+  tmux             Start and Running tmux for monitor.
+
+if have any questions or bugs plz contact with 
+- cheayuki13@gmail.com
+"
+if [ -L "$0" ]; then
+    # 如果是符号链接，找到真实路径并更改到该目录
+    cd "$(dirname "$(readlink -f "$0")")"
+fi
+
+# 检查命令是否为空
+if [[ -z $1 ]]; then
+    echo "Error: No command provided."
+    echo "$help_message"
+    exit 1
+fi
+
+# 获取命令
+command=$1
+shift  # 移除命令 只处理后续的参数
+
+# 执行对应的命令
+case $command in
+    server)
+        ./server.sh $@
+        ;;
+    add)
+        ./add.sh $@
+        ;;
+    gen)
+        ./gen.sh $@
+        ;;
+    tmux)
+        ./tmux.sh $@
+        ;;
+    list)
+        ./list.sh $@
+        ;;
+    redirect)
+        ./redirect.sh $@
+        ;;
+    clean)
+        ./clean.sh $@
+        ;;
+    verify)
+        ./verify.sh $@
+        ;;
+    choose)
+        ./choose.sh $@
+        ;;
+    *)
+        echo "Unknown command: $command"
+        echo "$help_message"
+        exit 1
+        ;;
+esac

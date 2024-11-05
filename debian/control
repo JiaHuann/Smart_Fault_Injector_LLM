@@ -1,0 +1,11 @@
+Source: faultInjectionLLM
+Section: utils
+Priority: optional
+Maintainer: Liu Jiahuan <cheayuki13@gmail.com>
+Build-Depends: debhelper (>=10)
+Standards-Version: 4.0.0
+
+Package: faultInjectionLLM
+Architecture: amd64
+Depends: python3, libc6-dev-i386, tmux
+Description: faultInjectionLLM is a tool for kernel any function error injection.
