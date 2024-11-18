@@ -1,5 +1,6 @@
 # faultInjectionLLM  *beta-v1.0*
-> faultInjectionLLM 是对任意内核态函数进行错误注入，并基于大模型的推荐注入进行自动化执行系统。
+> faultInjectionLLM 是对任意内核态函数进行错误注入，并基于大模型的推荐注入进行自动化执行系统。底层注入技术依赖于eBPF
+> 更多请看此文章https://zhuanlan.zhihu.com/p/2590022381
 
 
 ## 1. 环境安装
