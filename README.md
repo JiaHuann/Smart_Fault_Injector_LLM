@@ -71,5 +71,5 @@ OPENAI_BASE_URL=xxxx
     `faultInjectionLLM clean`
 
 
-## 5.注意事项
-> WIP
+## 5.MORE
+欢迎使用过程中遇到bug和问题时提交issue。你的意见会使得faultInjectionLLM更加完善！
