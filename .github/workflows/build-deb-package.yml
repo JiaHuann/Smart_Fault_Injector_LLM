@@ -1,4 +1,4 @@
-name: Build Debian Package
+name: Build and Publish Debian Package
 
 on: push
 
@@ -16,8 +16,28 @@ jobs:
         with:
           buildpackage-opts: --build=binary --no-sign
 
-      # 上传构建的 Debian 包作为 Artifact
-      - uses: actions/upload-artifact@v4
+      # 上传构建的 Debian 包到 GitHub Packages
+      - name: Upload Debian Package to GitHub Packages
+        uses: actions/upload-artifact@v4
         with:
           path: debian/artifacts/
-          name: debian_package
+          name: faultinjectorllm_0.1.0
+
+      - name: Publish to GitHub Packages
+        run: |
+          # 设置 GitHub Packages 的认证
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+          # 打包 Debian 文件并推送到 GitHub Packages
+          DEB_FILE=$(ls debian/artifacts/*.deb)
+          PACKAGE_NAME="faultinjectorllm"
+          VERSION="0.1.0"
+          IMAGE_NAME="ghcr.io/jiahuann/smart_fault_injector_llm/$PACKAGE_NAME:$VERSION"
+
+          # 创建一个临时 Dockerfile
+          echo "FROM scratch" > Dockerfile
+          echo "COPY $DEB_FILE /" >> Dockerfile
+
+          # 构建并推送 Docker 镜像
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
