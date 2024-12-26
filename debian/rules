@@ -7,4 +7,4 @@ override_dh_auto_build:
 
 
 override_dh_auto_install:
-	dh_install --exclude=faultInjectionLLM
+	dh_install --exclude=faultinjectionllm

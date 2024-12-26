@@ -1,0 +1,9 @@
+cmd/* /usr/share/faultinjectionllm/cmd
+src/client/* /usr/share/faultinjectionllm/src/client
+src/server/* /usr/share/faultinjectionllm/src/server
+build/bin/* /usr/share/faultinjectionllm/build/bin
+build/src/* /usr/share/faultinjectionllm/build/src
+uploads/* /usr/share/faultinjectionllm/uploads
+logs/* /usr/share/faultinjectionllm/logs
+.env /usr/share/faultinjectionllm/
+requirements.txt /usr/share/faultinjectionllm/

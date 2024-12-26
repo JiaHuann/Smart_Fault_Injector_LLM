@@ -1,9 +1,0 @@
-cmd/* usr/share/faultInjectionLLM/cmd
-src/client/* usr/share/faultInjectionLLM/src/client
-src/server/* usr/share/faultInjectionLLM/src/server
-build/bin/* usr/share/faultInjectionLLM/build/bin
-build/src/* usr/share/faultInjectionLLM/build/src
-uploads/* usr/share/faultInjectionLLM/uploads
-logs/* usr/share/faultInjectionLLM/logs
-.env usr/share/faultInjectionLLM/
-requirements.txt usr/share/faultInjectionLLM/

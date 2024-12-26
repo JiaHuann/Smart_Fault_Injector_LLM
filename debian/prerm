@@ -2,7 +2,7 @@
 set -e  # 如果任何命令失败，则退出脚本
 
 # 移除符号链接
-sudo rm -rf /usr/bin/faultInjectionLLM
-sudo rm -rf /usr/share/faultInjectionLLM
+sudo rm -rf /usr/bin/faultinjectionllm
+sudo rm -rf /usr/share/faultinjectionllm
 
 exit 0

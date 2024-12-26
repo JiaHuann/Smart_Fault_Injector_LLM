@@ -7,7 +7,7 @@ check_env() {
         echo "=======Creating virtual environment...======="
         python3 -m venv ../.venv
         source ../.venv/bin/activate
-        pip install -r ../requirements.txt -i https://bytedpypi.byted.org/simple
+        pip install -r ../requirements.txt
             if [ $? -ne 0 ]; then
             echo "Error creating virtual environment. Exiting..."
             exit 1
@@ -17,5 +17,5 @@ check_env() {
 
 check_env
 
-cd /usr/share/faultInjectionLLM/src/server
+cd /usr/share/faultinjectionllm/src/server
 python server.py
