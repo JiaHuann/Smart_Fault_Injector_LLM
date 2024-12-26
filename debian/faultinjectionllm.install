@@ -5,5 +5,4 @@ build/bin/* /usr/share/faultinjectionllm/build/bin
 build/src/* /usr/share/faultinjectionllm/build/src
 uploads/* /usr/share/faultinjectionllm/uploads
 logs/* /usr/share/faultinjectionllm/logs
-.env /usr/share/faultinjectionllm/
 requirements.txt /usr/share/faultinjectionllm/
