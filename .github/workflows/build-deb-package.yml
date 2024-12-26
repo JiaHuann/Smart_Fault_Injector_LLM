@@ -1,6 +1,9 @@
-name: Build and Publish Debian Package
+name: Build and Release Debian Package
 
-on: push
+on:
+  push:
+    tags:
+      - 'v*'  # 仅当推送的标签以 "v" 开头时触发（例如 v1.0.0）
 
 jobs:
   build-debs:
@@ -16,28 +19,25 @@ jobs:
         with:
           buildpackage-opts: --build=binary --no-sign
 
-      # 上传构建的 Debian 包到 GitHub Packages
-      - name: Upload Debian Package to GitHub Packages
-        uses: actions/upload-artifact@v4
+      # 创建 GitHub Release
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: debian/artifacts/
-          name: faultinjectorllm_0.1.0
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
 
-      - name: Publish to GitHub Packages
-        run: |
-          # 设置 GitHub Packages 的认证
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-          # 打包 Debian 文件并推送到 GitHub Packages
-          DEB_FILE=$(ls debian/artifacts/*.deb)
-          PACKAGE_NAME="faultinjectorllm"
-          VERSION="0.1.0"
-          IMAGE_NAME="ghcr.io/jiahuann/smart_fault_injector_llm/$PACKAGE_NAME:$VERSION"
-
-          # 创建一个临时 Dockerfile
-          echo "FROM scratch" > Dockerfile
-          echo "COPY $DEB_FILE /" >> Dockerfile
-
-          # 构建并推送 Docker 镜像
-          docker build -t $IMAGE_NAME .
-          docker push $IMAGE_NAME
+      # 上传 Debian 包作为 Release Asset
+      - name: Upload Debian Package to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: debian/artifacts/faultinjectorllm_0.1.0.deb
+          asset_name: faultinjectorllm_0.1.0.deb
+          asset_content_type: application/vnd.debian.binary-package
