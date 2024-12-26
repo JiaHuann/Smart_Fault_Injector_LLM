@@ -8,6 +8,8 @@ on:
 jobs:
   build-debs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 允许创建 Release 和上传 Asset
     steps:
       # 检出代码
       - uses: actions/checkout@v4
