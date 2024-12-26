@@ -1,7 +1,35 @@
 # faultInjectionLLM  *beta-v1.0*
-> faultInjectionLLM 是对任意内核态函数进行错误注入，并基于大模型的推荐注入进行自动化执行系统。底层注入技术依赖于eBPF
+faultInjectionLLM 是对任意内核态函数进行错误注入，并基于大模型的推荐注入进行自动化执行系统。底层注入技术依赖于eBPF.
+
+通过替换任意内核态函数的返回值达到注入错误返回值的效果，验证上层函数及错误处理逻辑等。可模拟硬件错误，内存分配错误、网络错误、任意内核子系统错误等。
+
 > 更多请看此文章https://zhuanlan.zhihu.com/p/2590022381
 
+## 0.定制Kernel
+
+1. `/内核根目录/lib/error-inject.c` 将`within_error_injection_list`函数修改为如下：
+```c
+bool within_error_injection_list(unsigned long addr)
+{
+	// struct ei_entry *ent;
+	// bool ret = false;
+
+	// mutex_lock(&ei_mutex);
+	// list_for_each_entry(ent, &error_injection_list, list) {
+	// 	if (addr >= ent->start_addr && addr < ent->end_addr) {
+	// 		ret = true;
+	// 		break;
+	// 	}
+	// }
+	// mutex_unlock(&ei_mutex);
+	// return ret;
+
+    return true;
+}
+
+```
+2. 打开`CONFIG_BPF_KPROBE_OVERRIDE`以及ebpf相关基本config
+3. 重新编译安装内核。
 
 ## 1. 环境安装
 
