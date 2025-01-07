@@ -39,6 +39,7 @@ def get_user_prompt(function_string: str) -> str:
     2.该函数的错误返回值仅为-XXX（如-EIO、-ENOMEM等）、或true/false
     3.该函数不准存在NULL错误返回值。(必须)
     4.该函数不准存在<errno.h>以外的任何返回值（必须）
+    5.该函数不为no trace类型函数
 
     同时告诉我:可能的返回值以及你给出这些错误值的原因，格式如下：
     [

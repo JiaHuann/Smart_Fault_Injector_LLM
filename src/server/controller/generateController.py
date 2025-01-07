@@ -11,7 +11,7 @@ class GenerateController:
     def get_output(self, function_string: str) -> FunctionOutput:
         # [WIP] 这里链接会不会中断？评估一下@zjh
         response = self.client.chat.completions.create(
-            model="deepseek-coder",
+            model="deepseek-chat",
             messages=[
                 {
                     "role": "system",
