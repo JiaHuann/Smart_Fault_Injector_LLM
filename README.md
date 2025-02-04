@@ -45,6 +45,15 @@ sudo apt install clang libc6-dev-i386 linux-headers-$(uname -r) python3.11-venv 
 sudo apt install build-essential flex bison dwarves libssl-dev libelf-dev libncurses-dev bc
 ```
 
+- 安装 faultInjectionLLM
+
+  前往[Github Releases](https://github.com/JiaHuann/Smart_Fault_Injector_LLM/releases), 下载最新 deb 文件。
+
+  安装 faultInjectionLLM, 将其中/path/to/faultinjectionllm_x.y.z_amd64.deb 换成你的路径和文件名
+  ```bash
+  sudo dpkg -i /path/to/faultinjectionllm_x.y.z_amd64.deb
+  ```
+
 ## 2.使用faultInjectionLLM
 0. 在仓库根目录创建`.env`文件,并根据实际情况填写。
 ```yaml
