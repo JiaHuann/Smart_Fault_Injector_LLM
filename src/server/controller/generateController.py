@@ -1,6 +1,6 @@
 from openai import OpenAI
-from model.model import  FunctionOutput
-from config.prompt import system_prompt, get_user_prompt
+from model.model import  FunctionOutput, FunctionOutputWtihGoal
+from config.prompt import get_user_prompt_and_goal, system_prompt, get_user_prompt
 from config.env import env_vars
 
 class GenerateController:
@@ -26,4 +26,24 @@ class GenerateController:
         )
         print(response.choices[0].message.content)
         output = FunctionOutput.model_validate_json(response.choices[0].message.content)
+        return output
+    
+    def get_output_user_description(self, function_string: str, user_goal: str) -> FunctionOutput:
+        # [WIP] 这里链接会不会中断？评估一下@zjh
+        response = self.client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": get_user_prompt_and_goal(function_string, user_goal),
+                },
+            ],
+            response_format={"type": "json_object"},
+        )
+        print(response.choices[0].message.content)
+        output = FunctionOutputWtihGoal.model_validate_json(response.choices[0].message.content)
         return output

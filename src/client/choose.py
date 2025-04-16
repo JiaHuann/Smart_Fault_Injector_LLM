@@ -10,18 +10,21 @@ def read_functions_log(file_path):
             parts = line.strip().split('$')
             file_name = parts[0]
             func_name = parts[1]
+            if len(parts) > 4:
+                probability = parts[4]
+            else:
+                probability = ' '
             try:
                 has_errors = ast.literal_eval(parts[2]) if parts[2] else []
             except (SyntaxError, ValueError):
                 has_errors = parts[2].strip("[]").replace("'", "").split(", ")
             reason = parts[3]
-            target_error = parts[4] if len(parts) > 4 else ''
             functions.append({
                 'file_name': file_name,
                 'func_name': func_name,
                 'has_errors': has_errors,
                 'reason': reason,
-                'target_error': target_error
+                'probability':probability,
             })
     return functions
 
@@ -84,13 +87,22 @@ def select_func_default(functions):
 
     for func in functions:
         if func['has_errors']:
-            # 为每个错误类型设置概率为 5%
-            selected_errors = [(error, 5) for error in func['has_errors']]
-            selected_results.append({
-                'file_name': func['file_name'],
-                'func_name': func['func_name'],
-                'errors': selected_errors
-            })
+            if func['probability'] != ' ':
+                # 为每个错误类型设置已经决定好的概率
+                selected_errors = [(error, func['probability']) for error in func['has_errors']]
+                selected_results.append({
+                    'file_name': func['file_name'],
+                    'func_name': func['func_name'],
+                    'errors': selected_errors
+                })
+            else:
+                # 为每个错误类型设置概率为 5%
+                selected_errors = [(error, 5) for error in func['has_errors']]
+                selected_results.append({
+                    'file_name': func['file_name'],
+                    'func_name': func['func_name'],
+                    'errors': selected_errors
+                })
         else:
             print(f"No errors available for function: {func['func_name']}")
 

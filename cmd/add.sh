@@ -42,7 +42,7 @@ process_file() {
     local file_path="$1"
     if [ -f "$file_path" ]; then
         echo "Processing file: $file_path"
-        python getSingleFile.py "$file_path"
+        python getSingleFile.py -f "$file_path"
         if [ $? -ne 0 ]; then
             echo "Error processing $file_path with getSingleFile.py. Exiting..."
             exit 1
@@ -144,6 +144,25 @@ main() {
         change_to_client_directory
         process_multiple_files "$@"
         run_choose_script_interact
+    fi
+
+    if [ "$1" == "describe" ]; then
+        cleanup_previous_builds
+        change_to_client_directory
+            local file_path="$1"
+        if [ -f "$3" ]; then
+            echo "Processing file: $file_path"
+            python getSingleFile.py -d "$2" "$3"
+            if [ $? -ne 0 ]; then
+                echo "Error processing $file_path with getSingleFile.py. Exiting..."
+                exit 1
+            fi
+        else
+            echo "Invalid path: $file_path. Please check the file path and try again."
+            exit 1
+        fi
+        run_choose_script_default
+        exit 1
     fi
 
     if [ "$1" == "default" ]; then

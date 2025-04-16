@@ -61,3 +61,39 @@ def get_user_prompt(function_string: str) -> str:
         + f"{str(FunctionOutput.model_json_schema())}"
     )
     return user_prompt
+
+def get_user_prompt_and_goal(function_string: str, user_goal: str) -> str:
+    user_prompt = (
+        f"""你是一个通过让内核函数返回错误来模拟错误发生的错误注入生成助手。我给你了一段内核代码，请你找出用户想要模拟的错误场景流程中的关键函数，以及该函数对应的存在的错误返回值（代码上下文中获取）,用户会描述他想要的错误注入场景以及概率，你需要给他找出可以模拟这个错误的函数和对应的错误返回值。筛选条件如下：
+    1.该函数不为inline函数
+    2.该函数的错误返回值仅为-XXX（如-EIO、-ENOMEM等）、或true/false
+    3.该函数不准存在NULL错误返回值。(必须)
+    4.该函数不准存在<errno.h>以外的任何返回值（必须）
+    5.该函数不为no trace类型函数
+
+   同时告诉我:可能的返回值以及你给出这些错误值的原因，格式样例如下：
+    [
+    {{
+        "funcName": "__kmalloc",
+        "detail": "实际执行内存分配的核心函数",
+        "hasError": ["-ENOMEM"],
+        "Reason": "当系统物理内存不足时返回-ENOMEM，符合内存分配失败场景",
+        "probability": "70"
+    }}
+    ]
+    不准捏造，返回的可能的错误值必须符合我给你的代码事实，至少找3个以上，实在没有符合的可以只找一个。
+    返回值不准出现除了-XXX和true/false以外的，禁止返回NULL指针的错误。
+    {function_string}
+
+    我想要模拟的错误场景和出现的概率如下：
+
+    """
+       # + f"{str(FunctionOutput.model_json_schema())}"
+       + f"{user_goal}"
+       + 
+    f"""
+       The response should be in JSON format, adhering to the schema provided below:
+    """
+       + f"{str(FunctionOutput.model_json_schema())}"
+    )
+    return user_prompt
